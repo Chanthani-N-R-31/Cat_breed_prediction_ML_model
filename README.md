@@ -82,11 +82,3 @@ The model was trained for **10 epochs**.
 * **Fine-tuning:** Unfreeze the top layers of MobileNetV2 to further improve breed classification accuracy.
 * **Mobile App:** Deploy the lightweight model into a Flutter or React Native app for real-time identification.
 
-## 👤 Author
-
-**Chanthani N R**
-* [LinkedIn](https://linkedin.com/in/your-profile)
-* [GitHub](https://github.com/your-username)
-
----
-*Made with 😸 by Chanthani*
