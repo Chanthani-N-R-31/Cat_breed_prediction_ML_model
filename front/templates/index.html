@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat Breed Identifier</title>
+    <link rel="stylesheet" href="/static/style.css?v={{ version }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cat Breed Identifier 🐾</h1>
+            <p>Upload a photo and let our AI tell you the breed!</p>
+        </header>
+
+        <div class="gallery">
+            <img src="/static/animal-cat-adorable-20787.jpg" alt="A cute cat">
+            <img src="/static/fluffy-yellow-kitten-staring-playful-curiosity-in-autumn-forest-beauty-generated-by-ai-free-photo.jpg" alt="Another cute cat">
+            <img src="/static/pexels-pixabay-104827.jpg" alt="A third cute cat">
+        </div>
+
+        <div class="upload-section">
+            <form id="upload-form">
+                <label for="file-upload" class="custom-file-upload">
+                    <i class="icon">📁</i> Choose a Photo
+                </label>
+                <input id="file-upload" type="file" accept="image/*">
+                <span id="file-name">No file chosen</span>
+            </form>
+            <div id="image-preview"></div>
+        </div>
+
+        <div id="loader" class="loader" style="display: none;"></div>
+        
+        <div id="result" class="result-section" style="display: none;">
+            <h2 id="result-breed"></h2>
+            <p id="result-confidence"></p>
+            <div class="details">
+                <p><strong>Origin:</strong> <span id="result-origin"></span></p>
+                <p><strong>Temperament:</strong> <span id="result-temperament"></span></p>
+                <p><strong>Description:</strong> <span id="result-description"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const fileInput = document.getElementById('file-upload');
+        const fileNameSpan = document.getElementById('file-name');
+        const imagePreview = document.getElementById('image-preview');
+        const loader = document.getElementById('loader');
+        const resultSection = document.getElementById('result');
+
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (file) {
+                fileNameSpan.textContent = file.name;
+                
+                // Show image preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.innerHTML = `<img src="${e.target.result}" alt="Image Preview"/>`;
+                };
+                reader.readAsDataURL(file);
+
+                // Automatically submit the form
+                submitForm();
+            }
+        });
+
+        function submitForm() {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            loader.style.display = 'block';
+            resultSection.style.display = 'none';
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                loader.style.display = 'none';
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else {
+                    document.getElementById('result-breed').textContent = data.breed;
+                    document.getElementById('result-confidence').textContent = `Confidence: ${data.confidence}%`;
+                    document.getElementById('result-origin').textContent = data.origin;
+                    document.getElementById('result-temperament').textContent = data.temperament;
+                    document.getElementById('result-description').textContent = data.description;
+                    resultSection.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                loader.style.display = 'none';
+                alert('An error occurred. Please try again.');
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
