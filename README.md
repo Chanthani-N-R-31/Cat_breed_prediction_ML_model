@@ -73,7 +73,7 @@ The model was trained for **10 epochs**.
 3.  **Run the predictor:**
     Update the image path in the script and run:
     ```bash
-    python predict.py
+    python gardio.py
     ```
 
 ## 🔮 Future Work
